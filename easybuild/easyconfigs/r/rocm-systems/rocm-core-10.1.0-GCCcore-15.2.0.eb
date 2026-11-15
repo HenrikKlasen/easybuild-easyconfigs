@@ -1,0 +1,33 @@
+# EasyBuild easyconfig for rocm-core
+#
+# Copyright: This file is a template based on standard EasyBuild easyconfigs.
+#
+
+easyblock = 'CMakeMake'
+
+name = 'rocm-core'
+version = '10.1'
+
+homepage = 'https://github.com/ROCm/rocm-systems'
+description = "ROCm Core package providing version and installation information."
+
+toolchain = {'name': 'GCCcore', 'version': '15.2.0'}
+toolchain_amd = {'name': 'ROCm', 'version': version}
+
+source_urls = ['https://github.com/ROCm/rocm-systems/releases/download/']
+sources = ['therock-%s/rocm-core.tar.gz' % version]
+checksums = ['sha256:3fbbe95aacb3ca9613f549ecdbee457c09c686ecd524ebe19160026e2fa56248']
+
+builddependencies = [
+    ('CMake', '4.2.1'),
+    ('binutils', '2.45'),
+]
+
+configopts = "-DCMAKE_BUILD_TYPE=Release"
+
+sanity_check_paths = {
+    'files': [],
+    'dirs': ['include/rocm-core', 'share/rocm'],
+}
+
+moduleclass = 'lib'
