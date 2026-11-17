@@ -1,0 +1,25 @@
+easyblock = 'ConfigureMake'
+
+name = 'UCX'
+version = '1.18.0'
+
+homepage = 'https://openucx.org/'
+description = """Unified Communication X (UCX) built with ROCm 10.1.0 GPU transport support."""
+
+toolchain = SYSTEM
+
+source_urls = ['https://github.com/openucx/ucx/releases/download/v%(version)s']
+sources = [SOURCELOWER_TAR_GZ]
+
+dependencies = [
+    ('ROCm-Core', '10.1.0', '', SYSTEM),
+]
+
+configopts = '--with-rocm=$EBROOTROCMMINCORE --without-cuda --enable-mt'
+
+sanity_check_paths = {
+    'files': ['bin/ucx_info', 'lib/libucp.so', 'lib/ucx/libuct_rocm.so'],
+    'dirs': ['include/ucp'],
+}
+
+moduleclass = 'lib'

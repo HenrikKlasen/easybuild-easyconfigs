@@ -1,51 +1,98 @@
-easyblock = 'CMakeMake'
+easyblock = 'CMakeNinja'
 
-name = 'ROCm-core'
+name = 'ROCm-Core'
 version = '10.1.0'
 
 homepage = 'https://github.com/ROCm/TheRock'
-description = 'ROCm Core SDK components built from TheRock'
+description = """Modular source build of AMD ROCm Core SDK 10.1.0 via TheRock
+(AMD LLVM 24.0.0, ROCr Runtime, HIP 7.16.0, plus selected HPC libraries)."""
 
-toolchain = {'name': 'GCCcore', 'version': '15.2.0'}
+toolchain = SYSTEM
 
-github_account = 'ROCm'
-github_repo = 'TheRock'
+# Target GPU architecture(s) - semicolon-separated if multiple, e.g. 'gfx90a;gfx942'
+local_amdgpu_targets = 'gfx942;gfx950;gfx1250'
 
+# Use git_config so EasyBuild clones the tag and runs TheRock's submodule fetch script
 sources = [{
-    'filename': '%(version)s.tar.gz',
-    'download_filename': 'rocm-core.tar.gz',
-    'source_urls': [
-        'https://github.com/ROCm/rocm-systems/releases/download/therock-10.1/'
-    ],
+    'filename': 'TheRock-%(version)s.tar.gz',
+    'git_config': {
+        'url': 'https://github.com/ROCm',
+        'repo_name': 'TheRock',
+        'tag': 'rocm-%(version)s',  # Or set 'commit': '<sha>' for tracking main/nightly
+        'recursive': False,
+    },
 }]
 
 builddependencies = [
-    ('CMake', '4.2.1'),
-    ('Ninja', '1.13.2'),
+    ('CMake', '3.31.8'),
+    ('Ninja', '1.13.2', '', ('GCCcore','15.2.0')),
+    ('Python', '3.14.2', '', ('GCCcore', '15.2.0')),
 ]
 
-preconfigopts = 'python3 build_tools/fetch_sources.py && '
+# Fetch only the submodules needed by the enabled features
+preconfigopts = 'python3 ./build_tools/fetch_sources.py && '
 
-configopts = """
--GNinja
--DTHEROCK_ENABLE_ALL=OFF
--DTHEROCK_ENABLE_CORE=ON
--DTHEROCK_ENABLE_COMM_LIBS=OFF
--DTHEROCK_ENABLE_MATH_LIBS=OFF
--DTHEROCK_ENABLE_ML_LIBS=OFF
--DTHEROCK_ENABLE_PROFILER=OFF
--DTHEROCK_AMDGPU_FAMILIES=gfx9;gfx10-3;gfx11;gfx12
-"""
+# Start minimal (Compiler + ROCr Runtime + HIP) and enable only what your cluster needs
+configopts = ' '.join([
+    '-DTHEROCK_AMDGPU_TARGETS="%s"' % local_amdgpu_targets,
+    '-DTHEROCK_ENABLE_ALL=OFF',
+    '-DTHEROCK_ENABLE_COMPILER=ON',
+    '-DTHEROCK_ENABLE_CORE_RUNTIME=ON',
+    '-DTHEROCK_ENABLE_HIP_RUNTIME=ON',
+    '-DTHEROCK_ENABLE_HIPIFY=ON',
+    # --- Optional HPC math & comms (toggle ON/OFF as needed) ---
+    '-DTHEROCK_ENABLE_PRIM=ON',
+    '-DTHEROCK_ENABLE_BLAS=ON',
+    '-DTHEROCK_ENABLE_RAND=ON',
+    '-DTHEROCK_ENABLE_FFT=ON',
+    '-DTHEROCK_ENABLE_SOLVER=ON',
+    '-DTHEROCK_ENABLE_SPARSE=ON',
+    '-DTHEROCK_ENABLE_RCCL=ON',
+    '-DTHEROCK_ENABLE_ROCSHMEM=ON',
+    # --- Heavy ML/media/profiler components kept OFF ---
+    '-DTHEROCK_ENABLE_MIOPEN=OFF',
+    '-DTHEROCK_ENABLE_ROCDECODE=OFF',
+    '-DTHEROCK_ENABLE_ROCJPEG=OFF',
+    '-DBUILD_TESTING=OFF',
+])
 
-separate_build_dir = True
+# TheRock assembles the final self-contained SDK tree into build/dist/rocm
+skipsteps = ['install']
+postbuildcmds = [
+    'cp -a dist/rocm/. %(installdir)s/',
+]
+
+modextravars = {
+    'ROCM_PATH': '%(installdir)s',
+    'ROCM_HOME': '%(installdir)s',
+    'HIP_PATH': '%(installdir)s',
+    'HIP_PLATFORM': 'amd',
+    'DEVICE_LIB_PATH': '%(installdir)s/amdgcn/bitcode',
+    'ROCM_VERSION': '%(version)s',
+}
+
+modextrapaths = {
+    'PATH': ['bin', 'llvm/bin'],
+    'LD_LIBRARY_PATH': ['lib', 'lib64', 'llvm/lib'],
+    'LIBRARY_PATH': ['lib', 'lib64'],
+    'CPATH': ['include', 'include/hip'],
+    'CMAKE_PREFIX_PATH': ['', 'lib/cmake'],
+    'PKG_CONFIG_PATH': ['lib/pkgconfig', 'share/pkgconfig'],
+}
 
 sanity_check_paths = {
     'files': [
+        'bin/hipcc',
         'bin/rocminfo',
+        'llvm/bin/amdclang',
+        'llvm/bin/amdclang++',
+        'llvm/bin/amdflang',
+        'lib/libamdhip64.so',
+        'lib/libhsa-runtime64.so',
     ],
     'dirs': [
-        'lib',
-        'include',
+        'include/hip',
+        'amdgcn/bitcode',
     ],
 }
 

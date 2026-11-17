@@ -1,0 +1,27 @@
+easyblock = 'Bundle'
+
+name = 'ROCm-HPC'
+version = '10.1.0'
+
+homepage = 'https://rocm.docs.amd.com/en/docs-10.1.0/components/hpc-sdk/'
+description = """AMD ROCm HPC SDK 10.1.0: exposes hipTensor and rocALUTION from
+the rootless ROCm Core SDK installation."""
+
+toolchain = SYSTEM
+
+dependencies = [
+    ('ROCm-Core', version),
+]
+
+sanity_check_paths = {
+    'files': [
+        '%(EBROOTROCMMINCORE)s/lib/libhiptensor.so',
+        '%(EBROOTROCMMINCORE)s/lib/librocalution.so',
+    ],
+    'dirs': [
+        '%(EBROOTROCMMINCORE)s/include/hiptensor',
+        '%(EBROOTROCMMINCORE)s/include/rocalution',
+    ],
+}
+
+moduleclass = 'numlib'

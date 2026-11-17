@@ -1,0 +1,26 @@
+easyblock = 'CMakeMake'
+
+name = 'ROCm-Core'
+version = '7.2.0'
+
+homepage = 'https://github.com/ROCm/ROCm'
+description = "ROCm common infrastructure"
+
+toolchain = {'name': 'llvm-compilers', 'version': '20.1.8'}
+
+source_urls = ['https://github.com/ROCm/rocm-core/archive/refs/tags']
+sources = [{
+    'download_filename': 'rocm-%(version)s.tar.gz',
+    'filename': 'ROCm-%(version)s.tar.gz',
+}]
+
+start_dir = 'ROCm-rocm-%(version)s'
+
+configopts = '-DCMAKE_INSTALL_PREFIX=%(installdir)s'
+
+sanity_check_paths = {
+    'files': [],
+    'dirs': ['share'],
+}
+
+moduleclass = 'devel'

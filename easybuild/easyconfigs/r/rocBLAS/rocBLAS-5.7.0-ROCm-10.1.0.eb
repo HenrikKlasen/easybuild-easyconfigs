@@ -1,0 +1,23 @@
+easyblock = 'Bundle'
+
+name = 'rocBLAS'
+version = '5.7.0'
+versionsuffix = '-ROCm-10.1.0'
+
+homepage = 'https://rocm.docs.amd.com/projects/rocBLAS/en/docs-10.1.0/'
+description = """rocBLAS 5.7.0 compatibility module backed by rootless ROCm Core SDK 10.1.0."""
+
+toolchain = SYSTEM
+
+dependencies = [
+    ('ROCm-Core', '10.1.0'),
+]
+
+modluafooter = 'setenv("ROCBLAS_ROOT", os.getenv("EBROOTROCMMINCORE") or "")'
+
+sanity_check_paths = {
+    'files': ['%(EBROOTROCMMINCORE)s/lib/librocblas.so'],
+    'dirs': ['%(EBROOTROCMMINCORE)s/include/rocblas'],
+}
+
+moduleclass = 'numlib'

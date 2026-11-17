@@ -1,0 +1,52 @@
+easyblock = 'Tarball'
+
+name = 'ROCm-Core'
+version = '10.1.0'
+
+homepage = 'https://rocm.docs.amd.com/en/docs-10.1.0/'
+description = """AMD ROCm Core SDK 10.1.0 (rootless TheRock tarball): self-contained
+distribution with HIP 7.16.0, LLVM 24.0.0, rocBLAS 5.7.0, hipBLAS 3.7.0,
+hipBLASLt 1.4.1, rocFFT 1.0.40, rocSOLVER 3.37.0, rocSPARSE 5.1.0, RCCL, and rocSHMEM."""
+
+toolchain = SYSTEM
+
+# Change this to match your GPU family: 'gfx950-dcgpu', 'gfx94X-dcgpu', 'gfx90a', etc.
+local_family = 'gfx94X-dcgpu'
+
+source_urls = ['https://stable.repo.amd.com/rocm/core/tarball/']
+sources = ['therock-dist-linux-%s-%%(version)s.tar.gz' % local_family]
+
+modextravars = {
+    'ROCM_PATH': '%(installdir)s',
+    'ROCM_HOME': '%(installdir)s',
+    'HIP_PATH': '%(installdir)s',
+    'HIP_PLATFORM': 'amd',
+    'DEVICE_LIB_PATH': '%(installdir)s/amdgcn/bitcode',
+    'ROCM_VERSION': '%(version)s',
+}
+
+modextrapaths = {
+    'PATH': ['bin', 'llvm/bin'],
+    'LD_LIBRARY_PATH': ['lib', 'lib64', 'llvm/lib'],
+    'LIBRARY_PATH': ['lib', 'lib64'],
+    'CPATH': ['include', 'include/hip', 'include/rocblas'],
+    'CMAKE_PREFIX_PATH': ['', 'lib/cmake'],
+    'PKG_CONFIG_PATH': ['lib/pkgconfig', 'share/pkgconfig'],
+}
+
+sanity_check_paths = {
+    'files': [
+        'bin/hipcc',
+        'bin/rocminfo',
+        'llvm/bin/amdclang',
+        'lib/libamdhip64.so',
+        'lib/librocblas.so',
+    ],
+    'dirs': [
+        'include/hip',
+        'include/rocblas',
+        'lib/cmake/rocblas',
+    ],
+}
+
+moduleclass = 'devel'

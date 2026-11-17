@@ -1,0 +1,47 @@
+easyblock = 'CMakeMake'
+
+name = 'AMDLLVM'
+version = '7.2.0'
+
+homepage = 'https://github.com/ROCm/llvm-project'
+description = "AMDLLVM"
+toolchain = SYSTEM 
+
+builddependencies = [
+    ('CMake', '4.0.3'),
+    ('binutils', '2.44'),
+]
+
+dependencies = [
+    ('ROCm-Core', version )
+]
+
+source_urls = [
+    'https://github.com/ROCm/llvm-project/archive/refs/tags'
+]
+
+sources = [{
+    'download_filename': 'rocm-%(version)s.tar.gz',
+    'filename': 'llvm-project-rocm-%(version)s.tar.gz',
+}]
+
+start_dir = 'llvm-project-rocm-%(version)s/llvm'
+
+configopts = ' '.join([
+    '-DLLVM_ENABLE_PROJECTS="clang;lld"',
+    '-DLLVM_TARGETS_TO_BUILD="AMDGPU;NVPTX;X86"',
+])
+
+sanity_check_paths = {
+    'files': [
+        'bin/clang',
+        'bin/clang++',
+        'bin/lld',
+    ],
+    'dirs': [
+        'lib',
+        'include',
+    ],
+}
+
+moduleclass = 'compiler'

@@ -1,0 +1,38 @@
+easyblock = 'Bundle'
+
+name = 'rocm-compilers'
+version = '24.0.0'
+versionsuffix = '-ROCm-10.1.0'
+
+homepage = 'https://rocm.docs.amd.com/en/docs-10.1.0/'
+description = """AMD ROCm LLVM 24.0.0 compilers (amdclang, amdclang++, amdflang)
+backed by rootless ROCm Core SDK 10.1.0."""
+
+toolchain = SYSTEM
+
+dependencies = [
+    ('ROCm-Core', '10.1.0'),
+]
+
+modextravars = {
+    'CC': 'amdclang',
+    'CXX': 'amdclang++',
+    'FC': 'amdflang',
+    'F77': 'amdflang',
+    'F90': 'amdflang',
+}
+sanity_check_paths = {
+    'files': [
+        'llvm/bin/amdclang',
+        'llvm/bin/amdclang++',
+        'llvm/bin/amdflang',
+    ],
+    'dirs': ['llvm/lib'],
+}
+sanity_check_commands = [
+    'amdclang --version',
+    'amdclang++ --version',
+    'amdflang --version',
+]
+
+moduleclass = 'compiler'
