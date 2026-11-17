@@ -1,0 +1,45 @@
+easyblock = 'CMakeMake'
+
+name = 'ROCR-Runtime'
+version = '7.2.0'
+
+homepage = 'https://github.com/ROCm/ROCR-Runtime'
+
+toolchain = {'name': 'llvm-compilers', 'version': '20.1.8'}
+
+builddependencies = [
+    ('CMake', '4.0.3'),
+]
+
+dependencies = [
+    ('ROCm-Core', version),
+    ('AMDLLVM', version),
+]
+
+source_urls = [
+    'https://github.com/ROCm/ROCR-Runtime/archive/refs/tags'
+]
+
+sources = [{
+    'download_filename': 'rocm-%(version)s.tar.gz',
+    'filename': 'ROCR-Runtime-rocm-%(version)s.tar.gz',
+}]
+
+checksums = [
+    'REPLACE_ME'
+]
+
+start_dir = 'ROCR-Runtime-rocm-%(version)s/src'
+
+configopts = ''.join([
+    '-DCMAKE_INSTALL_PREFIX=%(installdir)s ',
+])
+
+sanity_check_paths = {
+    'files': [
+        'lib/libhsa-runtime64.so',
+    ],
+    'dirs': [],
+}
+
+moduleclass = 'lib'

@@ -1,0 +1,61 @@
+easyblock = 'Bundle'
+
+name = 'HIP'
+version = '7.2.0'
+
+homepage = 'https://github.com/ROCm/HIP'
+description = """Heterogeneous Instance Programming or smth like this"""
+toolchain = {'name': 'llvm-compilers', 'version': '20.1.8'}
+
+dependencies = [
+    ('ROCm-Core', version),
+    ('AMDLLVM', version),
+    ('ROCR-Runtime', version),
+    ('numactl', '2.0.19'),
+]
+
+builddependencies = [
+    ('CMake', '4.0.3'),
+    ('CppHeaderParser', '2.7.4'),
+]
+
+default_easyblock = 'CMakeMake'
+
+components = [
+
+    ('HIPCC', version, {
+        'source_urls': [
+            'https://github.com/ROCm/llvm-project/archive/refs/tags',
+        ],
+        'sources': [{
+            'download_filename': 'rocm-%(version)s.tar.gz',
+            'filename': 'llvm-project-rocm-%(version)s.tar.gz',
+        }],
+        'srcdir': 'llvm-project-rocm-%(version)s/amd/hipcc',
+    }),
+
+    ('HIP', version, {
+        'source_urls': [
+            'https://github.com/ROCm/HIP/archive/refs/tags',
+        ],
+        'sources': [{
+            'download_filename': 'rocm-%(version)s.tar.gz',
+            'filename': 'HIP-%(version)s.tar.gz',
+        }],
+        'configopts': ' '.join([
+            '-DHIP_PLATFORM=amd',
+            '-DCMAKE_INSTALL_PREFIX=%(installdir)s',
+        ]),
+    }),
+]
+
+sanity_check_paths = {
+    'files': [
+        'bin/hipcc',
+        'bin/hipconfig',
+        'include/hip/hip_runtime.h',
+    ],
+    'dirs': [],
+}
+
+moduleclass = 'tools'

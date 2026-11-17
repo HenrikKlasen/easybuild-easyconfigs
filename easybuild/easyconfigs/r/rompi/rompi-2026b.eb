@@ -1,0 +1,17 @@
+easyblock = 'Toolchain'
+
+name = 'rompi'
+version = '2026b'
+
+homepage = 'https://rocm.docs.amd.com/en/docs-10.1.0/'
+description = """Rootless AMD ROCm 10.1.0 toolchain (LLVM 24.0.0 + ROCm Core SDK + GPU-aware OpenMPI)."""
+
+toolchain = SYSTEM
+
+dependencies = [
+    ('ROCm-Core', '10.1.0'),
+    #('rocm-compilers', '24.0.0', '-ROCm-10.1.0'),
+    ('OpenMPI', '5.0.8'),
+]
+
+moduleclass = 'toolchain'

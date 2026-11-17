@@ -1,0 +1,33 @@
+easyblock = 'CMakeMake'
+
+name = 'rocminfo'
+version = '7.2.0'
+
+homepage = 'https://github.com/ROCm/rocminfo'
+
+toolchain = {'name': 'llvm-compilers', 'version': '20.1.8'}
+
+dependencies = [
+    ('ROCm-Core', version),
+    ('ROCR-Runtime', version),
+]
+
+source_urls = [
+    'https://github.com/ROCm/rocminfo/archive/refs/tags'
+]
+
+sources = [{
+    'download_filename': 'rocm-%(version)s.tar.gz',
+    'filename': 'rocminfo-rocm-%(version)s.tar.gz',
+}]
+
+sanity_check_paths = {
+    'files': ['bin/rocminfo'],
+    'dirs': [],
+}
+
+sanity_check_commands = [
+    'rocminfo --help',
+]
+
+moduleclass = 'tools'
