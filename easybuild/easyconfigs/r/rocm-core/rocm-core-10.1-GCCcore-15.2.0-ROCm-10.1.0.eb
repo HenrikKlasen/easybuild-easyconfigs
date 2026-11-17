@@ -3,7 +3,7 @@
 # Copyright: This file is a template based on standard EasyBuild easyconfigs.
 #
 
-easyblock = 'CMakePackage'
+easyblock = 'CMakeMake'
 
 name = 'rocm-core'
 version = '10.1.0'
@@ -14,17 +14,20 @@ description = "ROCm Core package providing version and installation information.
 toolchain = {'name': 'GCCcore', 'version': '15.2.0'}
 toolchain_amd = {'name': 'ROCm', 'version': version}
 
-source_urls = ['https://github.com/ROCm/rocm-core/archive/refs/tags/']
-sources = ['rocm-%s.tar.gz' % version]
-checksums = ['YOUR_SHA256_CHECKSUM_HERE']
+source_urls = ['https://github.com/ROCm/rocm-systems/releases/download/therock-10.1/']
+sources = ['rocm-core.tar.gz']
+checksums = ['3fbbe95aacb3ca9613f549ecdbee457c09c686ecd524ebe19160026e2fa56248']
 
 builddependencies = [
-    ('CMake', '3.31.4'),
-    ('binutils', '2.43'),
+    ('CMake', '4.2.1'),
+    ('binutils', '2.45'),
 ]
 
-configopts = "-DCMAKE_BUILD_TYPE=Release"
-
+#configopts = "-DCMAKE_BUILD_TYPE=Release"
+configopts = (
+    "-DCMAKE_BUILD_TYPE=Release "
+    "-DROCM_VERSION=%(version)s "
+)
 sanity_check_paths = {
     'files': [],
     'dirs': ['include/rocm-core', 'share/rocm'],
